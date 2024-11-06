@@ -1,0 +1,10 @@
+uv add module_name
+
+uv run fastapi dev
+
+python -m alembic init -t async migration
+
+python -m alembic revision --autogenerate -m "Initial revision"
+
+python -m alembic upgrade head
+python -m alembic downgrade
