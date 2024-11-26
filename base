@@ -2,7 +2,7 @@ uv add module_name
 
 uv run fastapi dev
 
-python -m alembic init -t async migration
+python -m alembic init -t async migrations
 
 python -m alembic revision --autogenerate -m "Initial revision"
 

@@ -11,9 +11,9 @@ class UserCreateCommand(BaseModel):
     subscription: bool = Field(default=False, description="Платная подписка")
     is_admin: bool = Field(default=False, description="Права админа")
 
-@classmethod
-@field_validator("birth")
-def validate_birth(cls, values: date):
-    if values and values >= datetime.now().date():
-        raise ValueError('Дата рождения должна быть в прошлом')
-    return values
+    @classmethod
+    @field_validator("birth")
+    def validate_birth(cls, values: date):
+        if values and values >= datetime.now().date():
+            raise ValueError('Дата рождения должна быть в прошлом')
+        return values

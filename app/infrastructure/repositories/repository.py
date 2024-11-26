@@ -15,18 +15,18 @@ class Repository:
             return result.scalars().all()
 
     @classmethod
-    async def find_one_or_none_by_id(cls, data_id: int):
+    async def find_by_id(cls, data_id: int):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(id=data_id)
             result = await session.execute(query)
             return result.scalar_one_or_none()
 
     @classmethod
-    async def find_one_or_none(cls, **filter_by):
+    async def find_by_filter(cls, **filter_by):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            return result.scalars().all()
 
     @classmethod
     async def add(cls, **values):
@@ -43,6 +43,8 @@ class Repository:
 
     @classmethod
     async def update(cls, filter_by, **values):
+        print(filter_by)
+        print(values)
         async with async_session_maker() as session:
             async with session.begin():
                 query = (
@@ -51,13 +53,15 @@ class Repository:
                     .values(**values)
                     .execution_options(synchronize_session="fetch")
                 )
-                result = await session.execute(query)
+                await session.execute(query)
                 try:
+                    query = select(cls.model).where(*[getattr(cls.model, k) == v for k, v in filter_by.items()])
+                    result = await session.execute(query)
                     await session.commit()
                 except SQLAlchemyError as e:
                     await session.rollback()
                     raise e
-                return result.rowcount
+                return result.scalar_one_or_none()
 
     @classmethod
     async def delete(cls, delete_all: bool = False, **filter_by):
@@ -74,3 +78,7 @@ class Repository:
                     await session.rollback()
                     raise e
                 return result.rowcount
+
+    @classmethod
+    async def check_code(cls, code: str):
+        return True

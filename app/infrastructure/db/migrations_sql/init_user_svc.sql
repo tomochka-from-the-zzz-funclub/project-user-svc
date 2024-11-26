@@ -11,16 +11,19 @@ create table users (
 create table favorite_films (
 	id SERIAL primary key,
 	user_id INT not null references users(id),
-	film_id INT not null references films(id)
+	film_id INT not null references films(id),
+    UNIQUE(user_id, film_id)
 );
 create table favorite_genres (
 	user_id INT not null references users(id),
-	genre_id INT not null references genres(id)
+	genre_id INT not null references genres(id),
+    UNIQUE(user_id, genre_id)
 );
 
 create table viewed (
 	id SERIAL primary key,
 	user_id INT not null references users(id),
 	film_id INT not null references films(id),
-	timecode TIME
+	timecode TIME,
+    UNIQUE(user_id, film_id)
 );
